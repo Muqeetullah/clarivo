@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useAuthNavigation } from "@/components/auth-navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/lib/auth/client";
@@ -15,6 +16,7 @@ import { credentialError } from "@/lib/auth/credential-error";
 
 export function useLoginForm(signup: boolean) {
   const hydrated = useAuthReady();
+  const { navigate, navigating } = useAuthNavigation();
   const [pending, setPending] = useState(false);
   const [googlePending, setGooglePending] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,12 +60,11 @@ export function useLoginForm(signup: boolean) {
           email: values.email,
           type: "email-verification",
         });
-        // Full navigation refreshes the server session after authentication.
-        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-        window.location.assign(
-          `${window.location.origin}/verify-email?email=${encodeURIComponent(values.email)}&sent=${sent.error ? "0" : "1"}`,
+        navigate(
+          `/verify-email?email=${encodeURIComponent(values.email)}&sent=${sent.error ? "0" : "1"}`,
+          { replace: true, refreshSession: true },
         );
-      } else window.location.assign(callbackURL());
+      } else navigate("/dashboard", { replace: true, refreshSession: true });
     } catch (error) {
       if (accountCreated) {
         setVerificationEmail(values.email);
@@ -98,7 +99,7 @@ export function useLoginForm(signup: boolean) {
   const magicLink = () => runmagicLink({ ...workflow, form });
   return {
     hydrated,
-    pending,
+    pending: pending || navigating,
     googlePending,
     message,
     messageIsError,

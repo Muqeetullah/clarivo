@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { CircleAlertIcon } from "lucide-react";
+import { CircleAlertIcon, LoaderCircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -40,15 +40,26 @@ export function AuthCard({
 export function AuthButton({
   className,
   variant = "default",
+  loading = false,
+  children,
   ...props
-}: ComponentProps<typeof Button>) {
+}: ComponentProps<typeof Button> & { loading?: boolean }) {
   return (
     <Button
       className={cn("auth-control", className)}
       variant={variant}
       data-auth-variant={variant}
+      aria-busy={loading || props["aria-busy"]}
       {...props}
-    />
+    >
+      {loading && (
+        <LoaderCircleIcon
+          className="animate-spin motion-reduce:animate-none"
+          aria-hidden="true"
+        />
+      )}
+      {children}
+    </Button>
   );
 }
 

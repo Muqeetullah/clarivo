@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuthNavigation } from "@/components/auth-navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,8 +39,10 @@ export function VerifyEmailForm({
   sent?: boolean;
 }) {
   const hydrated = useAuthReady();
+  const { navigate, navigating } = useAuthNavigation();
   const [messageIsError, setMessageIsError] = useState(false);
   const [pending, setPending] = useState(false);
+  const [action, setAction] = useState<"verify" | "resend">("verify");
   const [message, setMessage] = useState(
     sent
       ? "Your code is on its way. Check your inbox and spam folder."
@@ -51,7 +54,8 @@ export function VerifyEmailForm({
   });
   const validEmail = z.email().safeParse(email.trim()).success;
   async function verify(values: z.infer<typeof schema>) {
-    if (pending || !validEmail) return;
+    if (pending || !validEmail || navigating) return;
+    setAction("verify");
     setPending(true);
     setMessage("");
     setMessageIsError(true);
@@ -63,9 +67,7 @@ export function VerifyEmailForm({
       if (result.error)
         setMessage(verificationErrorMessage(result.error.status));
       else {
-        // Full navigation refreshes the server session after verification.
-        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-        window.location.assign(`${window.location.origin}/dashboard`);
+        navigate("/dashboard", { replace: true, refreshSession: true });
       }
     } catch (error) {
       setMessage(
@@ -78,7 +80,8 @@ export function VerifyEmailForm({
     }
   }
   async function resend() {
-    if (pending || !validEmail) return;
+    if (pending || !validEmail || navigating) return;
+    setAction("resend");
     setPending(true);
     setMessage("");
     setMessageIsError(true);
@@ -116,7 +119,12 @@ export function VerifyEmailForm({
           "Return to log in to choose the account you want to verify."
         )
       }
-      footer={<SignOutButton label="Use a different account" />}
+      footer={
+        <SignOutButton
+          label="Use a different account"
+          disabled={pending || navigating}
+        />
+      }
     >
       {validEmail ? (
         <form
@@ -134,7 +142,7 @@ export function VerifyEmailForm({
               render={({ field, fieldState }) => (
                 <Field
                   data-invalid={fieldState.invalid}
-                  data-disabled={!hydrated || pending}
+                  data-disabled={!hydrated || pending || navigating}
                 >
                   <FieldLabel htmlFor="otp">Verification code</FieldLabel>
                   <InputOTP
@@ -145,7 +153,7 @@ export function VerifyEmailForm({
                     maxLength={6}
                     pattern={REGEXP_ONLY_DIGITS}
                     pasteTransformer={(value) => value.replace(/[^0-9]/g, "")}
-                    disabled={!hydrated || pending}
+                    disabled={!hydrated || pending || navigating}
                     aria-invalid={fieldState.invalid}
                     aria-describedby={
                       fieldState.error ? "otp-error" : undefined
@@ -178,16 +186,23 @@ export function VerifyEmailForm({
                 messageIsError ? "Unable to verify email" : "Email verification"
               }
             />
-            <AuthButton type="submit" disabled={!hydrated || pending}>
-              {pending ? "Please wait…" : "Verify email"}
+            <AuthButton
+              type="submit"
+              loading={(pending && action === "verify") || navigating}
+              disabled={!hydrated || pending || navigating}
+            >
+              {pending && action === "verify" ? "Verifying…" : "Verify email"}
             </AuthButton>
             <AuthButton
               type="button"
               variant="outline"
-              disabled={!hydrated || pending}
+              disabled={!hydrated || pending || navigating}
               onClick={resend}
+              loading={pending && action === "resend"}
             >
-              Send a new code
+              {pending && action === "resend"
+                ? "Sending code…"
+                : "Send a new code"}
             </AuthButton>
           </FieldGroup>
           <noscript>

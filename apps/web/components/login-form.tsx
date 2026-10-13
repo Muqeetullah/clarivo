@@ -1,7 +1,7 @@
 "use client";
 import { useLoginForm } from "@/lib/auth/use-login-form";
 
-import Link from "next/link";
+import { AuthLink } from "@/components/auth-navigation";
 import { EyeIcon, EyeOffIcon, LoaderCircleIcon, MailIcon } from "lucide-react";
 import { AuthCard, AuthButton, AuthFeedback } from "@/components/auth-ui";
 import {
@@ -56,12 +56,13 @@ export function LoginForm({ signup = false }: { signup?: boolean }) {
       footer={
         <p className="text-center text-sm text-muted-foreground">
           {signup ? "Already have an account? " : "Don’t have an account? "}
-          <Link
+          <AuthLink
+            disabled={pending}
             className="auth-switch-link"
             href={signup ? "/login" : "/signup"}
           >
             {signup ? "Log in" : "Sign up"}
-          </Link>
+          </AuthLink>
         </p>
       }
     >
@@ -182,20 +183,28 @@ export function LoginForm({ signup = false }: { signup?: boolean }) {
               }
             >
               {verificationEmail && (
-                <Link
+                <AuthLink
                   className="mt-2 block"
                   href={`/verify-email?email=${encodeURIComponent(verificationEmail)}`}
                 >
                   Verify email / request a new code
-                </Link>
+                </AuthLink>
               )}
             </AuthFeedback>
           )}
-          <AuthButton type="submit" disabled={!hydrated || pending}>
+          <AuthButton
+            type="submit"
+            loading={pending && !googlePending}
+            disabled={!hydrated || pending}
+          >
             {pending && !googlePending
-              ? "Please wait…"
+              ? signup
+                ? "Creating account…"
+                : magic
+                  ? "Sending link…"
+                  : "Signing in…"
               : signup
-                ? "Create account with email"
+                ? "Create account"
                 : magic
                   ? "Send sign-in link"
                   : "Log in"}

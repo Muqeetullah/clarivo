@@ -1,4 +1,5 @@
 "use client";
+import type { OwnerProfile } from "@/lib/auth/owner-profile";
 import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
@@ -10,7 +11,7 @@ export function DashboardShell({
   owner,
 }: {
   children: ReactNode;
-  owner: { name: string; email: string };
+  owner: OwnerProfile;
 }) {
   return (
     <TooltipProvider>

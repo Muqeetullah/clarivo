@@ -1,30 +1,38 @@
 "use client";
-import { useState } from "react";
-import { authClient } from "@/lib/auth/client";
-import { Button } from "@/components/ui/button";
-export function SignOutButton({ label = "Sign out" }: { label?: string }) {
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  async function signOut() {
-    setPending(true);
-    setError("");
-    try {
-      const result = await authClient.signOut();
-      if (result.error) setError("Couldn’t sign out. Please try again.");
-      else window.location.replace("/login");
-    } catch {
-      setError("Couldn’t connect. Please try signing out again.");
-    } finally {
-      setPending(false);
-    }
-  }
+import { LoaderCircleIcon, LogOutIcon } from "lucide-react";
+import { useSignOut } from "@/lib/auth/use-sign-out";
+import { AuthButton } from "@/components/auth-ui";
+
+export function SignOutButton({
+  label = "Sign out",
+  disabled = false,
+}: {
+  label?: string;
+  disabled?: boolean;
+}) {
+  const { signOut, pending, error } = useSignOut();
   return (
-    <div>
-      <Button variant="outline" size="sm" disabled={pending} onClick={signOut}>
+    <div className="w-full">
+      <AuthButton
+        type="button"
+        variant="outline"
+        className="w-full"
+        disabled={disabled || pending}
+        aria-busy={pending}
+        onClick={signOut}
+      >
+        {pending ? (
+          <LoaderCircleIcon
+            className="animate-spin motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+        ) : (
+          <LogOutIcon aria-hidden="true" />
+        )}
         {pending ? "Signing out…" : label}
-      </Button>
+      </AuthButton>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="mt-2 text-sm text-destructive">
           {error}
         </p>
       )}

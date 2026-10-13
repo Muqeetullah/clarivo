@@ -1,3 +1,4 @@
+import { AuthLoading } from "@/components/auth-loading";
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/login-form";
 import { Suspense } from "react";
@@ -5,7 +6,7 @@ import { redirectAuthenticatedOwner } from "@/lib/auth/owner";
 export const metadata: Metadata = { title: "Sign up — Clarivo" };
 export default function SignupPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AuthLoading message="Preparing your account…" />}>
       <GuestSignup />
     </Suspense>
   );

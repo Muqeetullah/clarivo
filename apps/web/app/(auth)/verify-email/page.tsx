@@ -1,3 +1,4 @@
+import { AuthLoading } from "@/components/auth-loading";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { VerifyEmailForm } from "@/components/verify-email-form";
@@ -18,7 +19,9 @@ async function VerificationQuery({ searchParams }: Props) {
 }
 export default function VerifyEmailPage(props: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={<AuthLoading message="Preparing email verification…" />}
+    >
       <VerificationQuery {...props} />
     </Suspense>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { AuthNavigationProvider } from "@/components/auth-navigation";
 
 export const metadata: Metadata = {
   title: "Clarivo — Thoughtful support. Human when it matters.",
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthNavigationProvider>{children}</AuthNavigationProvider>
+      </body>
     </html>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import type { OwnerProfile } from "@/lib/auth/owner-profile";
 
 // Adapted from the official shadcn dashboard-01 block (Base Nova).
 import Link from "next/link";
@@ -16,11 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function AppSidebar({
-  owner,
-}: {
-  owner: { name: string; email: string };
-}) {
+export function AppSidebar({ owner }: { owner: OwnerProfile }) {
   const { setOpenMobile } = useSidebar();
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -29,9 +26,9 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              render={<Link href="/" />}
+              render={<Link href="/dashboard" />}
               onClick={() => setOpenMobile(false)}
-              aria-label="Clarivo home"
+              aria-label="Clarivo workspace"
             >
               <Brand compact />
             </SidebarMenuButton>

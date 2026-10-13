@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AuthFormBoundary } from "@/components/auth-navigation";
 import { AuthVisual } from "@/components/auth-visual";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -18,7 +19,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <span className="text-xl font-semibold tracking-tight">clarivo</span>
         </Link>
         <div className="auth-form-body flex flex-1 items-center justify-center">
-          <div className="auth-form-width w-full">{children}</div>
+          <div className="auth-form-width w-full">
+            <AuthFormBoundary>{children}</AuthFormBoundary>
+          </div>
         </div>
       </div>
       <AuthVisual />

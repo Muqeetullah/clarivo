@@ -38,7 +38,12 @@ export async function requireVerifiedOwner() {
     redirect(`/verify-email?email=${encodeURIComponent(user.email)}`);
   }
   // There is no workspace or membership in this slice. This grants identity only.
-  return { id: user.id, name: user.name, email: user.email };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    image: user.image ?? null,
+  };
 }
 
 // Guest-only entry points must inspect the server session, not client state.

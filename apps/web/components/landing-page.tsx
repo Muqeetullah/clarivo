@@ -4,7 +4,15 @@ import { BackgroundVideo } from "@/components/background-video";
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, MessageCircle, UserRound } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  MessageCircle,
+  UserRound,
+  FileText,
+  History,
+  Code2,
+} from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,20 +25,24 @@ import { cn } from "@/lib/utils";
 
 const highlights = [
   {
-    glyph: "*",
-    value: "Your knowledge",
-    label: "Answers grounded in your business",
+    icon: FileText,
+    value: "4 knowledge formats",
+    label: "PDF, Markdown, text & pasted answers",
   },
   {
-    glyph: "↗",
-    value: "Human handoff",
-    label: "A person, with the full context",
+    icon: History,
+    value: "Full conversation history",
+    label: "Every message stays with the handoff",
   },
-  { glyph: "#", value: "One inbox", label: "Every conversation, together" },
   {
-    glyph: "<",
-    value: "One snippet",
-    label: "Live chat, right on your website",
+    icon: UserRound,
+    value: "A human on request",
+    label: "Visitors can ask for you at any time",
+  },
+  {
+    icon: Code2,
+    value: "1 embed snippet",
+    label: "Add support to your existing website",
   },
 ];
 const steps = [
@@ -84,7 +96,7 @@ export function LandingPage() {
             aria-label="Clarivo home"
           >
             <Image
-              src="/assets/logo.svg"
+              src="/assets/landing-logo.svg"
               alt=""
               width={52}
               height={52}
@@ -111,18 +123,15 @@ export function LandingPage() {
             >
               How it works
             </SheetTrigger>
-            <Link href="/login" className="landing-nav-link">
-              Log in <ArrowUpRight aria-hidden="true" />
-            </Link>
           </nav>
           <Link
-            href="/demo"
+            href="/login"
             className={cn(
               buttonVariants({ variant: "marketing-dark" }),
-              "landing-demo",
+              "landing-login",
             )}
           >
-            Explore demo <ArrowUpRight aria-hidden="true" />
+            Log in <ArrowUpRight aria-hidden="true" />
           </Link>
           <SheetTrigger
             render={
@@ -160,7 +169,7 @@ export function LandingPage() {
           <SheetDescription>
             {panel === "menu"
               ? "Thoughtful support. Human when it matters."
-              : "The Clarivo product vision. Explore the local dashboard prototype today."}
+              : "How Clarivo brings AI answers and human support together."}
           </SheetDescription>
           {panel === "menu" ? (
             <nav className="landing-menu-links" aria-label="Mobile navigation">
@@ -176,13 +185,6 @@ export function LandingPage() {
               <Button variant="ghost" onClick={() => setPanel("how")}>
                 How it works
               </Button>
-              <Link
-                href="/demo"
-                onClick={() => setOpen(false)}
-                className={buttonVariants({ variant: "default", size: "lg" })}
-              >
-                Explore the demo <ArrowUpRight aria-hidden="true" />
-              </Link>
             </nav>
           ) : (
             <>
@@ -214,12 +216,12 @@ export function LandingPage() {
                 ))}
               </ol>
               <p className="landing-prototype-note">
-                Available now: a dashboard demo with sample data. AI, uploads,
-                authentication, and the installable widget are still in
-                development.
+                Clarivo is in product preview. Account creation is available; AI
+                answers, knowledge uploads, and the installable widget are still
+                in development.
               </p>
-              <Link href="/demo" className={buttonVariants({ size: "lg" })}>
-                Explore the dashboard demo <ArrowUpRight aria-hidden="true" />
+              <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+                Create your account <ArrowUpRight aria-hidden="true" />
               </Link>
             </>
           )}
@@ -264,13 +266,13 @@ export function LandingPage() {
         </p>
         <div className="landing-actions landing-reveal" style={delay(0.4)}>
           <Link
-            href="/demo"
+            href="/signup"
             className={cn(
               buttonVariants({ variant: "marketing", size: "lg" }),
               "landing-cta",
             )}
           >
-            Explore the demo{" "}
+            Create your account{" "}
             <ArrowUpRight data-icon="inline-end" aria-hidden="true" />
           </Link>
           <span className="landing-demo-note">
@@ -287,7 +289,7 @@ export function LandingPage() {
               style={delay(0.5 + index * 0.08)}
             >
               <span className="landing-glyph" aria-hidden="true">
-                {item.glyph}
+                <item.icon />
               </span>
               <dt>{item.value}</dt>
               <dd>{item.label}</dd>
@@ -300,7 +302,8 @@ export function LandingPage() {
             PEOPLE
           </span>
           <span>
-            PRODUCT PREVIEW <span className="landing-status-dot" />
+            PRODUCT PREVIEW · IN DEVELOPMENT{" "}
+            <span className="landing-status-dot" />
           </span>
         </div>
       </footer>
