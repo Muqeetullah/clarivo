@@ -1,0 +1,11 @@
+// use prisma-8
+
+// Partial read mapping of Neon's managed table, not a migration source.
+// Never run db update, db sign, or migrations against this contract.
+namespace neon_auth {
+  model AuthUser {
+    id Uuid @id
+
+    @@map("user")
+  }
+}

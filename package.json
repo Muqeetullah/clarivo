@@ -1,0 +1,21 @@
+{
+  "name": "clarivo",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm db:generate && pnpm --filter @clarivo/web dev",
+    "build": "pnpm db:generate && pnpm --filter @clarivo/web build",
+    "start": "pnpm --filter @clarivo/web start",
+    "lint": "pnpm --filter @clarivo/web lint",
+    "typecheck": "pnpm --filter @clarivo/db typecheck && pnpm --filter @clarivo/web typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @clarivo/db generate"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
+  }
+}
