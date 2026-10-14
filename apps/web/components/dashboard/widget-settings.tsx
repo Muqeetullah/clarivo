@@ -203,8 +203,11 @@ export function WidgetSettings() {
                   </div>
                 </Field>
                 <FieldSet className="setup-setting-row">
+                  <FieldLegend className="sr-only">Accent color</FieldLegend>
                   <div>
-                    <FieldLegend>Accent color</FieldLegend>
+                    <span className="setup-setting-label" aria-hidden="true">
+                      Accent color
+                    </span>
                     <FieldDescription>
                       Used for the header, launcher and visitor messages.
                     </FieldDescription>
@@ -244,8 +247,11 @@ export function WidgetSettings() {
                   </div>
                 </FieldSet>
                 <FieldSet className="setup-setting-row">
+                  <FieldLegend className="sr-only">Position</FieldLegend>
                   <div>
-                    <FieldLegend>Position</FieldLegend>
+                    <span className="setup-setting-label" aria-hidden="true">
+                      Position
+                    </span>
                     <FieldDescription>
                       Which corner of the page the widget appears in.
                     </FieldDescription>

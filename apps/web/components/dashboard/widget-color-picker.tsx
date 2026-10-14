@@ -84,17 +84,26 @@ export function WidgetColorPicker({
 }) {
   const [error, setError] = useState("");
   const [draft, setDraft] = useState({ selected: value, text: value });
+  const [selection, setSelection] = useState({
+    hex: value,
+    hue: toShade(value).h,
+  });
   if (draft.selected !== value) {
     setDraft({ selected: value, text: value });
+    setError("");
   }
-  const [lastHue, setLastHue] = useState(toShade(value).h);
+  if (selection.hex !== value) {
+    setSelection({ hex: value, hue: toShade(value).h });
+  }
   const theme = useDashboardThemeClass();
   const shade = toShade(value);
-  const hue = shade.s > 0 && shade.v > 0 ? shade.h : lastHue;
+  // Preserve the chosen hue even when 8-bit RGB rounding leaves the hex unchanged.
+  const hue = selection.hue;
   function update(h: number, s: number, v: number) {
-    setLastHue(h);
+    const hex = fromShade(h, clamp(s), clamp(v));
+    setSelection({ hex, hue: h });
     setError("");
-    onChange(fromShade(h, clamp(s), clamp(v)));
+    onChange(hex);
   }
   function pickShade(e: PointerEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -118,7 +127,8 @@ export function WidgetColorPicker({
             .join("")
         : hex
     }`.toLowerCase();
-    setLastHue(toShade(next).h);
+    setSelection({ hex: next, hue: toShade(next).h });
+    setDraft({ selected: next, text: next });
     setError("");
     onChange(next);
   }

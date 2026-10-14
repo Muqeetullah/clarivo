@@ -20,7 +20,12 @@ export function DashboardShell({
     <TooltipProvider>
       <SidebarProvider
         className={cn("workspace-shell", themeClass)}
-        style={{ "--sidebar-width-icon": "4rem" } as CSSProperties}
+        style={
+          {
+            "--sidebar-width": "15rem",
+            "--sidebar-width-icon": "4rem",
+          } as CSSProperties
+        }
       >
         <a href="#workspace-content" className="workspace-skip">
           Skip to content

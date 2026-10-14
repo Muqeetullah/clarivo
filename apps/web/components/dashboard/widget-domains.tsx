@@ -29,7 +29,7 @@ export function WidgetDomains({
       const hostname = url.hostname.toLowerCase();
       if (
         !["http:", "https:"].includes(url.protocol) ||
-        !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(
+        !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9](?:[a-z0-9-]{0,57}[a-z0-9])?)$/.test(
           hostname,
         ) ||
         url.username ||

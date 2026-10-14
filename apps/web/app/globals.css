@@ -3007,9 +3007,6 @@ nav {
   --state-ai: #b6afd5;
   --state-closed: #a6a6ae;
 }
-.workspace-shell {
-  --sidebar-width: 15rem;
-}
 .workspace-surface {
   border: 1px solid var(--border);
   box-shadow: none;
@@ -3811,7 +3808,8 @@ nav {
   border-top: 1px solid var(--border);
 }
 .widget-config [data-slot="field-label"],
-.widget-config [data-slot="field-legend"] {
+.widget-config [data-slot="field-legend"],
+.widget-config .setup-setting-label {
   font-size: 13px;
   font-weight: 500;
   margin: 0 0 5px;

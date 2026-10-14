@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ArrowDownLeft,
-  ArrowLeft,
-  Bot,
-  CheckCheck,
-  Globe2,
-  Send,
-} from "lucide-react";
+import { ArrowDownLeft, Bot, CheckCheck, Globe2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -47,9 +40,7 @@ export function ConversationDetail({
   reply,
   setReply,
   sendReply,
-  inline = false,
 }: {
-  inline?: boolean;
   selected: Conversation | undefined;
   setSelectedId: (id: string | null) => void;
   changeState: (state: ConversationState) => void;
@@ -59,25 +50,12 @@ export function ConversationDetail({
 }) {
   const content = selected ? (
     <>
-      {inline ? (
-        <header className="inbox-detail-heading">
-          <Button variant="ghost" size="sm" onClick={() => setSelectedId(null)}>
-            <ArrowLeft data-icon="inline-start" />
-            Back to inbox
-          </Button>
-          <h2>{selected.subject}</h2>
-          <p>
-            {selected.visitor} · Conversation #{selected.id}
-          </p>
-        </header>
-      ) : (
-        <SheetHeader>
-          <SheetTitle>{selected.subject}</SheetTitle>
-          <SheetDescription>
-            {selected.visitor} · Conversation #{selected.id}
-          </SheetDescription>
-        </SheetHeader>
-      )}
+      <SheetHeader>
+        <SheetTitle>{selected.subject}</SheetTitle>
+        <SheetDescription>
+          {selected.visitor} · Conversation #{selected.id}
+        </SheetDescription>
+      </SheetHeader>
       <div className="conversation-sheet-content">
         <div className="detail-status">
           <StateBadge state={selected.state} />
@@ -89,7 +67,7 @@ export function ConversationDetail({
             Handoff: {selected.reason}
           </div>
         )}
-        <details className="visitor-details" open={!inline}>
+        <details className="visitor-details" open>
           <summary>Visitor details</summary>
           <div className="visitor-context">
             <span>
@@ -221,12 +199,6 @@ export function ConversationDetail({
       </div>
     </>
   ) : null;
-  if (inline)
-    return (
-      <section className="inbox-detail" aria-label="Selected conversation">
-        {content}
-      </section>
-    );
   return (
     <Sheet
       open={Boolean(selected)}
