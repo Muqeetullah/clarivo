@@ -1,4 +1,4 @@
-import { WorkspacePlaceholder } from "@/components/workspace-placeholder";
+import { DashboardHome } from "@/components/dashboard/home";
 import { requireVerifiedOwner } from "@/lib/auth/owner";
 import { Suspense } from "react";
 export default function DashboardPage() {
@@ -10,5 +10,5 @@ export default function DashboardPage() {
 }
 async function OwnerDashboard() {
   await requireVerifiedOwner();
-  return <WorkspacePlaceholder />;
+  return <DashboardHome />;
 }

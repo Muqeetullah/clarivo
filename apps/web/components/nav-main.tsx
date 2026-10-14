@@ -6,6 +6,7 @@ import { InboxIcon, LayoutDashboardIcon } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboardIcon },
+  { title: "Home", url: "/dashboard", icon: LayoutDashboardIcon },
   { title: "Inbox", url: "/dashboard/inbox", icon: InboxIcon },
 ];
 
@@ -21,7 +22,8 @@ export function NavMain() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   return (
-    <SidebarGroup>
+    <SidebarGroup className="sidebar-primary-nav">
+      <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <SidebarGroupContent>
         <nav aria-label="Workspace navigation">
           <SidebarMenu>
@@ -32,10 +34,13 @@ export function NavMain() {
                   isActive={pathname === url}
                   aria-current={pathname === url ? "page" : undefined}
                   tooltip={title}
+                  aria-label={title}
                   onClick={() => setOpenMobile(false)}
                 >
                   <Icon aria-hidden="true" />
-                  <span>{title}</span>
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {title}
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

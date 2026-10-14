@@ -1,4 +1,4 @@
-import { WorkspacePlaceholder } from "@/components/workspace-placeholder";
+import { DashboardInbox } from "@/components/dashboard/inbox";
 import { requireVerifiedOwner } from "@/lib/auth/owner";
 import { Suspense } from "react";
 export default function InboxPage() {
@@ -10,5 +10,5 @@ export default function InboxPage() {
 }
 async function OwnerInbox() {
   await requireVerifiedOwner();
-  return <WorkspacePlaceholder inbox />;
+  return <DashboardInbox />;
 }
