@@ -245,3 +245,57 @@ export const demoSources = [
     status: "processing",
   },
 ] as const;
+
+export const demoVisitorProfiles: Record<
+  string,
+  {
+    localTime: string;
+    language: string;
+    firstSeen: string;
+    lastSeen: string;
+    referrer: string;
+  }
+> = {
+  "1042": {
+    localTime: "10:45",
+    language: "English",
+    firstSeen: "Last week",
+    lastSeen: "2 minutes ago",
+    referrer: "Direct visit",
+  },
+  "1041": {
+    localTime: "04:37",
+    language: "English",
+    firstSeen: "Today",
+    lastSeen: "8 minutes ago",
+    referrer: "Search engine",
+  },
+  "1040": {
+    localTime: "11:33",
+    language: "German",
+    firstSeen: "Yesterday",
+    lastSeen: "12 minutes ago",
+    referrer: "Direct visit",
+  },
+  "1039": {
+    localTime: "05:21",
+    language: "English",
+    firstSeen: "Last month",
+    lastSeen: "24 minutes ago",
+    referrer: "Direct visit",
+  },
+  "1038": {
+    localTime: "02:13",
+    language: "English",
+    firstSeen: "Today",
+    lastSeen: "32 minutes ago",
+    referrer: "Search engine",
+  },
+  "1037": {
+    localTime: "20:45",
+    language: "English",
+    firstSeen: "Last month",
+    lastSeen: "1 hour ago",
+    referrer: "Direct visit",
+  },
+};

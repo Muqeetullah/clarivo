@@ -9,11 +9,21 @@ import {
   type ConversationState,
 } from "@/lib/demo-data";
 
-export function StateBadge({ state }: { state: ConversationState }) {
+export function StateBadge({
+  state,
+  compact = false,
+}: {
+  state: ConversationState;
+  compact?: boolean;
+}) {
   return (
     <Badge variant="outline" className={cn("state-badge", `state-${state}`)}>
       <span className="status-dot" />
-      {stateLabels[state]}
+      {compact
+        ? { ai: "Agent", waiting: "Waiting", human: "You", closed: "Closed" }[
+            state
+          ]
+        : stateLabels[state]}
     </Badge>
   );
 }

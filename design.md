@@ -24,7 +24,7 @@ The landing page is `/`. The existing local dashboard prototype is `/demo`. Main
 | Supporting text         | `#d0d0d0` at 80% opacity | Hero description                         |
 | Footer muted            | `#8e8e8e`                | Supporting footer labels                 |
 
-Marketing theme tokens live on `.landing-page`. They must not replace the dashboard’s existing light theme and violet accents. Sheets render through a portal, so their surface and text colors are set explicitly in the shared global stylesheet. The background has a static dark scrim to preserve contrast across video frames.
+Marketing theme tokens live on `.landing-page`. The owner dashboard now uses its own scoped dark theme, while the public demo retains its light theme. Sheets render through a portal, so their surface and text colors are set explicitly in the shared global stylesheet. The background has a static dark scrim to preserve contrast across video frames.
 
 ## Typography
 
@@ -86,3 +86,47 @@ The top-left mark sits in a white circle next to the `clarivo` wordmark. The ref
 Design guidance checked: [shadcn Card](https://ui.shadcn.com/docs/components/base/card), [Input Group](https://ui.shadcn.com/docs/components/base/input-group), and [GOV.UK password guidance](https://design-system.service.gov.uk/patterns/passwords/). Applied visible labels, password-manager autocomplete, unrestricted paste, explicit password requirements, and password visibility. Backend password policies were not changed.
 
 Verification: lint completed with the two existing internal-navigation warnings in auth components; strict typecheck passed. `pnpm build` completed successfully with Neon Auth cookie/prerender diagnostics from the existing dashboard owner guard. Browser inspection was blocked by the browser tool’s URL security policy, so the redesign’s desktop and phone rendering has not been visually verified in this run.
+
+## Owner dashboard pages, October 14, 2026
+
+Home is now the widget settings surface at `/dashboard`; Inbox lives at `/dashboard/inbox`. Keep exactly these two sidebar links. The public homepage remains unchanged. Home uses a settings card beside a visitor preview canvas, stacking on smaller screens. Inbox adapts the historical shadcn Mail list and detail composition with our current Base UI primitives and semantic conversation states. On phones, selecting a conversation replaces the list and exposes Back to inbox. No Copilot, email folders, team assignment or account switching is added.
+
+These pages are explicitly local previews. Widget changes and conversation actions reset on leaving the route or reloading. Auth is connected through the owner guard, as documented in `docs/AUTH.md`; earlier descriptions of UI only authentication in this file are historical.
+
+## Owner dashboard visual rebuild, October 14, 2026
+
+Home and Inbox follow the dark Clarivo direction established on the landing and auth pages: near-black chrome, charcoal surfaces, subtle borders, Inter for controls, white primary actions, and restrained semantic state colors. The Home introduction uses the local pixel display face. No background video runs behind operational UI. Only Home and Inbox remain in the sidebar; the existing authenticated profile menu remains intact. Scoped `.owner-theme` tokens also travel to the mobile sidebar and profile popup. The public landing theme is unchanged.
+
+Home separates widget appearance controls from a softly lit visitor-preview canvas. The widget itself retains a light visitor-facing surface with the editable accent color. Inputs are larger, color and position controls are aligned, and the setup note explicitly describes local state and unavailable installation. Inbox uses a compact two-panel composition with consistent conversation rows, expandable visitor metadata, readable message bubbles, right-aligned owner replies, and an inset reply composer. On phones, list and detail remain separate views with Back to inbox. Reduced-motion preferences suppress row transitions.
+
+The conversation state hook, ready-source rules, data fixtures, authenticated routes, and sign-out behavior were not changed. Browser checks on the same components used a temporary development-only sample-data fixture; it was removed before the final build. No authenticated owner session was available, and both protected routes still redirected to login.
+
+## Dashboard appearance preference
+
+The dashboard header now has a shadcn appearance dropdown with Dark and Light radio items. Dark is the initial selection. `next-themes` persists the selected mode in localStorage under `clarivo-dashboard-theme`. Its root data attribute is scoped by `.owner-theme` CSS, so the dashboard, mobile sidebar and profile popup switch together while the landing, auth and public demo keep their existing themes. Dashboard surfaces and conversation states use theme tokens with light and dark palettes. The widget’s visitor-facing preview keeps its independent accent and light surface.
+
+Manual verification on a temporary sample-data fixture covered dark default selection, switching to light, Home and Inbox readability, saved light and dark selection after reload, and the phone appearance menu. The fixture was removed. Dark was restored as the selected preference. Authenticated provider acceptance remains outside this check.
+
+## Widget setup reference, October 15, 2026
+
+Home now uses the supplied widget screenshots as the layout reference: full width setup checklist above a settings column and sticky preview. Appearance uses divided label and control rows; knowledge files show state badges; allowed domains use an inline add form; install uses a bordered code surface. The preview has browser chrome, accent header, knowledge label, suggestions and a composer. On phones, sections and preview stack and label rows become vertical.
+
+The preview now follows the dashboard's light or dark semantic tokens for its surfaces. Its editable accent remains independent, with foreground contrast derived from luminance. Existing next-themes preference storage, portal theming and auth boundaries are preserved. All files, domains, installation and replies are explicitly local examples until backend integration.
+
+## Widget polish, October 15, 2026
+
+Dashboard document and body backgrounds now follow the owner theme during native overscroll. This styling only applies while the workspace shell is present. Saved theme UI uses a hydration snapshot so initial markup matches the server. Light mode uses softer secondary, muted and sidebar colors, white editing surfaces and restrained focus rings. The visitor preview canvas is neutral rather than tinted by the selected accent.
+
+Widget accents now default to lighter shades, retaining computed foreground contrast. The custom control uses the official shadcn Base UI Popover and Slider primitives with RGB channels, hex validation and a Palette icon. There is no native color input or third party color picker dependency. Position cards depict a miniature page, agent header, chat window and a launcher that independently opens or closes the example. Setup steps have individual borders. Installation code has file chrome, line numbers and semantic syntax colors, while clipboard copying preserves the exact demo snippet.
+
+## Visual color picker refinement
+
+The custom picker now presents named basic color presets, a two dimensional shade area, a rainbow hue slider and optional hex entry. RGB channels are no longer exposed. Pointer and keyboard changes update the same controlled accent value and computed foreground contrast. The popup keeps shadcn Popover and Slider focus behavior, owner theme tokens, and a bounded scrollable height on phones.
+
+## Inbox reference redesign, October 15, 2026
+
+Inbox now uses the supplied three panel reference: compact avatar rows and segmented state filters, a spacious central transcript with right aligned agent and owner responses, and a divided visitor details column. Header actions and an inset bottom composer keep the transcript free of repeated metadata and toolbars. Semantic blue waiting and action tokens complement the existing neutral light and dark surfaces. The details panel hides or becomes a sheet on narrower screens. DiceBear Thumbs avatars, generated locally, identify anonymous visitors and distinguish agent and owner messages.
+
+## Sidebar alignment and polish, October 15, 2026
+
+The collapsed sidebar uses a wider rail and shared 44px square controls for the brand, Home, Inbox and account menu. Navigation labels are explicitly hidden in collapsed mode while accessible labels and tooltips remain. This prevents hidden text from pushing icons off center. Navigation icons are 22px; the logo is 44px expanded and 40px collapsed, with its original SVG kept intact. The account avatar is centered inside a matching rounded hover and open state. Expanded navigation adds a quiet Workspace heading, consistent spacing, subtle borders and semantic blue active styling. Mobile retains the existing sheet and account menu behavior.

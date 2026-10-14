@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { demoConversations, type ConversationState } from "@/lib/demo-data";
-export function useConversations() {
+export function useConversations(initialId: string | null = null) {
   const [conversations, setConversations] = useState(demoConversations);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialId);
   const [reply, setReply] = useState("");
   const selected = conversations.find((c) => c.id === selectedId);
   function changeState(state: ConversationState) {
@@ -11,8 +11,8 @@ export function useConversations() {
       state === "closed"
         ? "Conversation closed."
         : state === "human"
-          ? "Jan took over the conversation."
-          : "You’re now chatting with the AI agent.";
+          ? "You took over this conversation."
+          : "Handed back to the agent. Waiting for the visitor’s next message.";
     setConversations((current) =>
       current.map((c) =>
         c.id === selected.id

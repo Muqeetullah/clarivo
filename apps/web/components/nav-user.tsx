@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useDashboardThemeClass } from "@/components/dashboard-theme";
+import { cn } from "@/lib/utils";
 
 import {
   EllipsisVerticalIcon,
@@ -37,7 +39,7 @@ function OwnerAvatar({ owner }: { owner: OwnerProfile }) {
     owner.email[0]?.toUpperCase() ||
     "C";
   return (
-    <Avatar className="size-9 shrink-0">
+    <Avatar className="sidebar-owner-avatar size-10 shrink-0">
       {owner.image && (
         <AvatarImage src={owner.image} alt="" referrerPolicy="no-referrer" />
       )}
@@ -49,6 +51,7 @@ function OwnerAvatar({ owner }: { owner: OwnerProfile }) {
 }
 
 export function NavUser({ owner }: { owner: OwnerProfile }) {
+  const themeClass = useDashboardThemeClass();
   const { isMobile } = useSidebar();
   const [open, setOpen] = useState(false);
   const { signOut, pending, error } = useSignOut();
@@ -58,10 +61,7 @@ export function NavUser({ owner }: { owner: OwnerProfile }) {
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton
-                size="lg"
-                className="h-auto min-h-16 gap-3 rounded-xl p-3"
-              />
+              <SidebarMenuButton size="lg" className="sidebar-account-button" />
             }
             aria-label="Open user profile menu"
           >
@@ -83,7 +83,10 @@ export function NavUser({ owner }: { owner: OwnerProfile }) {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-72 max-w-[calc(100vw-2rem)] rounded-xl p-1.5"
+            className={cn(
+              themeClass,
+              "w-72 max-w-[calc(100vw-2rem)] rounded-xl p-1.5",
+            )}
             side={isMobile ? "top" : "right"}
             align="end"
             sideOffset={8}
