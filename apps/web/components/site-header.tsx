@@ -16,7 +16,7 @@ export function SiteHeader() {
       />
       <h1 className="text-sm font-medium">{inbox ? "Inbox" : "Home"}</h1>
       <Badge variant="secondary" className="ml-auto">
-        Local preview
+        Workspace
       </Badge>
       <DashboardThemeToggle />
     </header>

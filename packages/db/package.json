@@ -3,15 +3,20 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./app": "./app.ts"
   },
   "scripts": {
-    "generate": "prisma contract emit",
-    "typecheck": "pnpm generate && tsc --noEmit"
+    "generate": "prisma contract emit && prisma contract emit --config prisma.app.config.ts",
+    "typecheck": "pnpm generate && tsc --noEmit",
+    "migration:plan": "prisma migration plan --config prisma.app.config.ts",
+    "migration:show": "prisma migration show --config prisma.app.config.ts",
+    "migration:deploy": "prisma db migrate --config prisma.app.config.ts"
   },
   "dependencies": {
     "@prisma/orm-postgres": "8.0.0-rc.17",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "@clarivo/shared": "workspace:*"
   },
   "devDependencies": {
     "prisma": "8.0.0-rc.22",

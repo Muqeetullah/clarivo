@@ -8,3 +8,10 @@ node_modules/
 pnpm-debug.log*
 
 .agents/
+
+apps/web/public/embed.js
+
+apps/realtime/.dev.vars*
+apps/realtime/.wrangler/
+apps/functions/dist/
+.vercel

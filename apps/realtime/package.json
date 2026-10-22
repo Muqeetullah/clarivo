@@ -1,0 +1,22 @@
+{
+  "name": "@clarivo/realtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --env development --port 1999",
+    "typecheck": "tsc --noEmit",
+    "build": "wrangler deploy --env development --dry-run --outdir .wrangler/build",
+    "deploy:dev": "wrangler deploy --env development"
+  },
+  "dependencies": {
+    "@clarivo/shared": "workspace:*",
+    "jose": "6.2.12",
+    "partyserver": "0.5.10"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261012.1",
+    "typescript": "^5",
+    "wrangler": "4.151.1"
+  }
+}

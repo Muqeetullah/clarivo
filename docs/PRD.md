@@ -14,7 +14,7 @@
 
 ## 1. Summary
 
-**Implementation snapshot — October 12, 2026.** The pnpm workspace and Next.js dashboard are implemented. The dashboard includes an overview, searchable inbox, conversation-state filters, local replies and handoffs, a knowledge-source overview, and a widget appearance preview. All data is demo data and changes reset on reload. Owner authentication has a Neon SDK integration with server protection and required verification; live email/OAuth acceptance and magic links remain blocked or unverified as recorded in [AUTH.md](AUTH.md). Business onboarding and data persistence, the embeddable widget, real-time messaging, knowledge ingestion, and the AI pipeline remain planned. The requirements below describe the target v1 product.
+**Implementation snapshot, October 17, 2026.** A connected human live-chat milestone is implemented alongside the public sample demo. Owner onboarding, saved settings and avatars, persistent visitor/conversation data, embedding, realtime infrastructure and inactivity closure are covered in [LIVE-CHAT.md](LIVE-CHAT.md). Its provider-connected acceptance and remaining blockers are listed there. AI, knowledge ingestion and attachments remain deferred; the full v1 requirements below still describe the larger target product. Existing auth and magic-link limitations remain in [AUTH.md](AUTH.md).
 
 Clarivo is an Intercom-style customer support app. A business pastes one snippet into its website and gets a chat widget. Visitors who open the widget talk to an AI agent that answers **only** from the business's own knowledge base. When the agent isn't sure, or the visitor asks for a person, the conversation goes to the business's owner in a real-time dashboard.
 

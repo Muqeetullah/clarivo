@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "clarivo-realtime",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-17",
+  "workers_dev": false,
+  "env": {
+    "development": {
+      "name": "clarivo-realtime-dev",
+      "workers_dev": true,
+      "durable_objects": {
+        "bindings": [
+          { "name": "Workspace", "class_name": "Workspace" },
+          { "name": "Conversation", "class_name": "Conversation" },
+        ],
+      },
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["Workspace", "Conversation"] },
+      ],
+    },
+  },
+}

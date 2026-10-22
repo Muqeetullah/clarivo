@@ -20,7 +20,7 @@ const shared = globalThis as typeof globalThis & {
 };
 
 // Internal auth response validation only, never a public account lookup endpoint.
-// Only the boolean leaves this layer; no client or managed user record is exported.
+// No database client or complete managed user record is exported.
 export async function authUserExistsById(id: string): Promise<boolean> {
   // Neon IDs are UUIDs; synthetic anti-enumeration responses can use other IDs.
   if (
@@ -28,8 +28,20 @@ export async function authUserExistsById(id: string): Promise<boolean> {
   )
     return false;
   const db = (shared.clarivoAuthReadClient ??= createClient());
-  const user = await db.orm.neon_auth.AuthUser.where((user) =>
-    user.id.eq(id),
-  ).first();
+  const user = await db.orm.neon_auth.AuthUser.where((user) => user.id.eq(id))
+    .select("id")
+    .first();
   return user !== null;
+}
+
+/** Internal read after the app layer derives userId from workspace membership. */
+export async function readAuthOwnerPresentation(userId: string) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)
+  )
+    return null;
+  const db = (shared.clarivoAuthReadClient ??= createClient());
+  return db.orm.neon_auth.AuthUser.where({ id: userId })
+    .select("name", "image")
+    .first();
 }

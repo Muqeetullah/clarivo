@@ -5,6 +5,8 @@
 namespace neon_auth {
   model AuthUser {
     id Uuid @id
+    name String
+    image String?
 
     @@map("user")
   }

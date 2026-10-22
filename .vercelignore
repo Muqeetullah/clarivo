@@ -1,0 +1,12 @@
+artifacts/
+.agents/
+.git/
+.env*
+**/.env*
+**/.dev.vars*
+**/.wrangler/
+**/dist/
+**/node_modules/
+**/.next/
+**/.acceptance/
+**/*.tsbuildinfo
