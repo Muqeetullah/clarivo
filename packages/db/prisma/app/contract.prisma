@@ -1,0 +1,131 @@
+// use prisma-8
+
+// Only this namespace is application-owned. neon_auth is deliberately absent.
+namespace clarivo {
+  model Workspace {
+    id Uuid @id
+    ownerId Uuid @unique
+    name String
+    createdAt TimestamptzString(3)
+    agentName String
+    greeting String
+    accentColor String
+    position String
+    avatarKey String?
+    allowedDomains String[]
+    settingsVersion Int
+    installedAt TimestamptzString(3)?
+
+    @@map("workspaces")
+    @@check(expression: "position IN ('left', 'right')", name: "workspace_position")
+    @@check(expression: "\"settingsVersion\" >= 0", name: "workspace_version")
+  }
+
+  model Member {
+    id Uuid @id
+    workspaceId Uuid @unique
+    userId Uuid @unique
+    role String
+    workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    @@unique([workspaceId, id])
+    @@map("members")
+    @@check(expression: "role = 'owner'", name: "member_owner_only")
+  }
+
+  model AvatarUpload {
+    id Uuid @id
+    workspaceId Uuid
+    key String @unique
+    mime String
+    size Int
+    createdAt TimestamptzString(3)
+    expiresAt TimestamptzString(3)
+    confirmedAt TimestamptzString(3)?
+    workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    @@index([workspaceId])
+    @@map("avatar_uploads")
+    @@check(expression: "size > 0 AND size <= 2097152", name: "avatar_upload_size")
+    @@check(expression: "mime IN ('image/png', 'image/jpeg', 'image/webp', 'image/gif')", name: "avatar_upload_mime")
+  }
+
+  model Visitor {
+    id Uuid @id
+    workspaceId Uuid
+    secretHash String
+    country String?
+    city String?
+    device String?
+    browser String?
+    os String?
+    timeZone String?
+    language String?
+    page String?
+    referrer String?
+    firstSeenAt TimestamptzString(3)
+    lastSeenAt TimestamptzString(3)
+    visitCount Int
+    workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    @@unique([workspaceId, id])
+    @@map("visitors")
+    @@check(expression: "\"visitCount\" >= 1", name: "visitor_visit_count")
+  }
+
+  model VisitorVisit {
+    id Uuid @id
+    workspaceId Uuid
+    visitorId Uuid
+    visitId Uuid
+    createdAt TimestamptzString(3)
+    visitor Visitor @relation(fields: [workspaceId, visitorId], references: [workspaceId, id], onDelete: Cascade)
+
+    @@unique([workspaceId, visitorId, visitId])
+    @@map("visitor_visits")
+  }
+
+  model Conversation {
+    id Uuid @id
+    workspaceId Uuid
+    visitorId Uuid
+    state String
+    handoffReason String?
+    createdAt TimestamptzString(3)
+    updatedAt TimestamptzString(3)
+    lastMessageAt TimestamptzString(3)
+    closedAt TimestamptzString(3)?
+    version Int
+    visitor Visitor @relation(fields: [workspaceId, visitorId], references: [workspaceId, id], onDelete: Cascade)
+
+    @@unique([workspaceId, id])
+    @@index([workspaceId, visitorId], unique: true, where: "state <> 'closed'", name: "one_open_conversation_per_visitor")
+    @@index([workspaceId, lastMessageAt])
+    @@index([lastMessageAt], where: "state <> 'closed'", name: "open_conversation_activity")
+    @@map("conversations")
+    @@check(expression: "state IN ('ai', 'waiting', 'human', 'closed')", name: "conversation_state")
+    @@check(expression: "\"handoffReason\" IS NULL OR \"handoffReason\" IN ('low_confidence', 'no_relevant_knowledge', 'visitor_requested', 'agent_off')", name: "conversation_handoff_reason")
+    @@check(expression: "(state = 'closed') = (\"closedAt\" IS NOT NULL)", name: "conversation_closed_timestamp")
+    @@check(expression: "version >= 0", name: "conversation_version")
+  }
+
+  model Message {
+    id Uuid @id
+    workspaceId Uuid
+    conversationId Uuid
+    author String
+    memberId Uuid?
+    body String
+    clientMessageId Uuid?
+    createdAt TimestamptzString(3)
+    conversation Conversation @relation(fields: [workspaceId, conversationId], references: [workspaceId, id], onDelete: Cascade)
+    member Member? @relation(fields: [workspaceId, memberId], references: [workspaceId, id], onDelete: Restrict)
+
+    @@unique([workspaceId, clientMessageId])
+    @@index([workspaceId, conversationId, createdAt, id])
+    @@map("messages")
+    @@check(expression: "author IN ('visitor', 'agent', 'member', 'system')", name: "message_author")
+    @@check(expression: "char_length(body) BETWEEN 1 AND 4000", name: "message_body_length")
+    @@check(expression: "(author = 'member') = (\"memberId\" IS NOT NULL)", name: "message_member_author")
+  }
+}

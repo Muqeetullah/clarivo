@@ -6,7 +6,7 @@ Follow the [root agent guide](../../AGENTS.md) for product scope, architecture b
 
 - `app/page.tsx` renders the public landing page; `/demo` renders `components/dashboard.tsx` with local demo state. `app/dashboard/` contains server protected owner routes. `app/layout.tsx` owns metadata and the global stylesheet import.
 - Before changing owner auth, read [the auth implementation and blockers](../../docs/AUTH.md). `lib/auth/` owns the Neon client, server instance, and verified owner guard. The SDK owns cookie and OAuth handling through `app/api/auth/[...path]/route.ts` and `proxy.ts`.
-- `lib/demo-data.ts` owns the demo shapes and fixtures. Derive counts and lists from conversation state; keep prototype interactions in memory until persistence is explicitly implemented.
+- `lib/demo-data.ts` owns the demo shapes and fixtures. Keep it confined to the public `/demo`. Connected owner components live in `components/connected/`; widget iframe components live in `components/widget/`, and `lib/rpc/` implements the shared contract.
 - `app/globals.css` owns the current theme tokens, layout styles, and responsive breakpoints. Preserve the light interface with violet accents unless the task changes the design.
 
 ## UI conventions
@@ -16,12 +16,12 @@ Follow the [root agent guide](../../AGENTS.md) for product scope, architecture b
 - Reuse the existing `Button`, `Badge`, `Card`, `Sheet`, `Tabs`, and form primitives. Forms use `FieldGroup`, `Field`, and associated labels. Conversation transcripts use `MessageScroller`, `Message`, `Bubble`, and `Marker`.
 - Auth pages reuse `components/auth-ui.tsx` for cards, buttons, and feedback, plus the `.auth-shell` spacing variables in `app/globals.css`. Auth forms use the shared `useAuthReady` hook; keep provider and validation behavior in their existing modules.
 - Use semantic theme tokens, existing variants, and `cn()` from `@/lib/utils`. Build responsive layouts with keyboard focus, accessible names, readable contrast, and reduced-motion support. Dialogs and sheets need titles.
-- When connecting validated forms, use React Hook Form and shared Zod schemas. When connecting server data, use the agreed oRPC/TanStack Query approach; their installed presence does not mean the current local prototype has an API.
+- When connecting validated forms, use React Hook Form and shared Zod schemas. Connected server data uses shared oRPC contracts and TanStack Query; server prefetch uses the same procedure implementation and authorization.
 - Clarivo is the product name, `clarivo` the wordmark, and `@clarivo/web` the package name. Demo owner names are fixture identities, not branding.
 
 ## Verification
 
-Use the root commands. For dashboard behavior changes, exercise the affected search/filter, reply, takeover, hand-back, or close flow and check that counts reflect it. Closed conversations must disable replies. For widget-preview changes, verify that edited values appear immediately and remain readable. Changes still reset on reload until persistence is built.
+Use the root commands. For dashboard behavior changes, exercise the affected search/filter, reply, takeover, hand-back, or close flow and check that counts reflect it. Closed conversations must disable replies. For widget-preview changes, verify that edited values appear immediately and remain readable. Connected settings and messages persist. Verify reload and reconnect separately from the public demo.
 
 Preserve the framework-managed block below when editing this guide.
 

@@ -11,9 +11,9 @@ Clarivo is an Intercom-style support product: an embeddable website chat widget,
 
 ## Current implementation
 
-The implemented app is a local dashboard prototype. Overview, inbox search and state filters, conversation history, owner replies, takeover, hand-back, closing, knowledge-source summaries, and widget appearance previews work with demo data. State lives in React memory and resets on reload.
+The owner dashboard now uses persisted workspace settings, visitors, conversations and messages through shared oRPC contracts. Verified owners complete one business-name onboarding step. Real workspaces begin empty; `/demo` remains public and sample based. Connected surfaces provide human support only: new conversations start `waiting` with `agent_off`; AI, knowledge ingestion, suggested questions, hand-back and attachments remain deferred.
 
-Owner authentication is integrated through Neon Managed Auth, with email verification and server protected dashboard routes. Live provider acceptance and magic links remain incomplete. Before auth changes or release, read [the auth implementation and blockers](docs/AUTH.md). Business onboarding, workspace persistence, API procedures, document ingestion, AI, real-time delivery, and the deployable widget remain unconnected. The public `/demo` needs no credentials. Keep sample data and preview-only actions clearly labeled.
+Before connected feature or deployment work, read [development setup and provider status](docs/DEVELOPMENT.md) and [connected milestone verification](docs/LIVE-CHAT.md). Neon development has an application schema, dedicated public-read avatar bucket and scheduled inactivity closure. Provider deployment and browser acceptance are recorded there; source compilation alone does not establish live acceptance. Before auth changes, also read [the auth implementation and blockers](docs/AUTH.md).
 
 ## Repository map
 
@@ -25,7 +25,7 @@ Owner authentication is integrated through Neon Managed Auth, with email verific
 | `apps/web/lib/demo-data.ts`         | Typed demo conversations, sources, and conversation-state labels          |
 | `docs/` and `CONTEXT.md`            | Product requirements, architecture decisions, prototype scope, vocabulary |
 
-`packages/db` contains a minimal server-only Prisma 8 read layer for validating Neon Auth signup response IDs. Its partial managed-schema contract is not a migration source; follow `packages/db/README.md`. `apps/realtime`, `apps/functions`, `packages/shared`, and `apps/web/embed` remain planned boundaries. Create them when their feature needs them, following the technology stack's repository layout.
+`packages/db` owns server-only Prisma 8 access and a separate application contract/migration lineage. Its partial Neon Auth read contract remains outside migrations; follow `packages/db/README.md`. Shared contracts and event schemas live in `packages/shared`; `apps/realtime` hosts PartyServer, `apps/functions` hosts inactivity closure, and `apps/web/embed` builds the loader. Keep persistent product actions in oRPC and derive tenant context on the server.
 
 ## Product invariants
 
@@ -40,7 +40,7 @@ Owner authentication is integrated through Neon Managed Auth, with email verific
 
 - Use pnpm workspaces, Next.js App Router without `src/`, and strict TypeScript. Install dependencies in the owning workspace when needed.
 - Implement connected reads and writes through contract-first oRPC and TanStack Query as specified. Server actions and browser-side database access are excluded by the agreed stack.
-- Keep database access in the future `packages/db` layer. Require an authenticated workspace context for every tenant read or write; derive workspace identity server-side rather than trusting client input.
+- Keep database access in `packages/db`. Require an authenticated workspace context for every tenant read or write; derive workspace identity server-side rather than trusting client input.
 - Persist messages before publishing real-time events. PartyServer delivers events; Postgres remains the source of truth. Re-check conversation ownership/state when streaming and saving an agent response so takeover wins.
 - Keep credentials server-side and out of Git. Source content and visitor messages are untrusted data, not instructions. Follow the documented visitor-token, allowed-domain, upload-validation, and storage boundaries when implementing those features.
 - For version-sensitive integrations, verify the installed version and the official documentation linked in `docs/TECH-STACK.md` before implementation. Report unavailable versions or capabilities instead of silently substituting a different major version or service.

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clarivo script playground</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f6f8;
+        color: #202531;
+        font:
+          15px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: auto;
+        padding: 32px 20px;
+      }
+      h1 {
+        font-size: 28px;
+        letter-spacing: -1px;
+        margin: 0;
+      }
+      p {
+        color: #566174;
+      }
+      .controls {
+        padding: 24px;
+        background: white;
+        border: 1px solid #dce1e8;
+        border-radius: 16px;
+        margin: 24px 0;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 145px;
+        resize: vertical;
+        padding: 14px;
+        border: 1px solid #aeb8c7;
+        border-radius: 8px;
+        font:
+          13px/1.6 ui-monospace,
+          monospace;
+      }
+      button,
+      .upload {
+        display: inline-block;
+        font: inherit;
+        cursor: pointer;
+        padding: 10px 16px;
+        border: 1px solid #b7c1d0;
+        border-radius: 8px;
+        background: white;
+        color: #202531;
+        margin: 8px 8px 0 0;
+      }
+      button.primary {
+        background: #254ddd;
+        color: white;
+        border-color: #254ddd;
+      }
+      :focus-visible {
+        outline: 3px solid #7797ff;
+        outline-offset: 3px;
+      }
+      #status {
+        min-height: 24px;
+        margin-bottom: 0;
+      }
+      iframe {
+        display: block;
+        width: 100%;
+        height: 650px;
+        border: 1px solid #dce1e8;
+        border-radius: 16px;
+        background: white;
+        margin: auto;
+      }
+      .preview {
+        overflow: auto;
+      }
+      small {
+        display: block;
+        color: #566174;
+      }
+      @media (max-width: 600px) {
+        main {
+          padding: 20px 12px;
+        }
+        .controls {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Clarivo script playground</h1>
+      <p>
+        Paste your installation snippet to try the real chat widget on a dummy
+        website.
+      </p>
+      <section class="controls" aria-label="Script controls">
+        <label for="snippet">Your Clarivo script</label>
+        <textarea
+          id="snippet"
+          spellcheck="false"
+          placeholder='&lt;script async src="http://localhost:3000/embed.js" data-workspace="your-workspace-id"&gt;&lt;/script&gt;'
+        ></textarea>
+        <small
+          >Use your own Clarivo script. Loading it contacts the app URL in the
+          snippet and its configured services. AI answers are not connected
+          yet.</small
+        >
+        <button class="primary" id="load" type="button">Load widget</button>
+        <label class="upload" for="file">Upload HTML or JS</label>
+        <input id="file" type="file" accept=".html,.htm,.js,.txt" hidden />
+        <button id="reset" type="button">Reset preview</button>
+        <button id="phone" type="button" aria-pressed="false">
+          Phone width
+        </button>
+        <p id="status" role="status">
+          Ready. Paste a snippet or choose a file. Nothing loads automatically.
+        </p>
+      </section>
+      <div class="preview">
+        <iframe
+          id="preview"
+          title="Dummy website with your chat widget"
+          sandbox="allow-scripts allow-same-origin"
+        ></iframe>
+      </div>
+    </main>
+    <script src="/playground.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,1371 @@
+[
+  {
+    "id": "schema.clarivo",
+    "label": "Create schema \"clarivo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"clarivo\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"clarivo\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.avatar_uploads",
+    "label": "Create table \"avatar_uploads\"",
+    "summary": "Creates table \"avatar_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "avatar_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"avatar_uploads\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"avatar_uploads\"",
+        "sql": "CREATE TABLE \"clarivo\".\"avatar_uploads\" (\n  \"confirmedAt\" timestamptz(3),\n  \"createdAt\" timestamptz(3) NOT NULL,\n  \"expiresAt\" timestamptz(3) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"key\" text NOT NULL,\n  \"mime\" text NOT NULL,\n  \"size\" int4 NOT NULL,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"avatar_upload_mime_2966695d\" CHECK (mime IN ('image/png', 'image/jpeg', 'image/webp', 'image/gif')),\n  CONSTRAINT \"avatar_upload_size_12729bc4\" CHECK (size > 0 AND size <= 2097152)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"avatar_uploads\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.conversations",
+    "label": "Create table \"conversations\"",
+    "summary": "Creates table \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"conversations\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"conversations\"",
+        "sql": "CREATE TABLE \"clarivo\".\"conversations\" (\n  \"closedAt\" timestamptz(3),\n  \"createdAt\" timestamptz(3) NOT NULL,\n  \"handoffReason\" text,\n  \"id\" uuid NOT NULL,\n  \"lastMessageAt\" timestamptz(3) NOT NULL,\n  \"state\" text NOT NULL,\n  \"updatedAt\" timestamptz(3) NOT NULL,\n  \"version\" int4 NOT NULL,\n  \"visitorId\" uuid NOT NULL,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"conversation_closed_timestamp_23fdbb3f\" CHECK ((state = 'closed') = (\"closedAt\" IS NOT NULL)),\n  CONSTRAINT \"conversation_handoff_reason_8f0dc0d4\" CHECK (\"handoffReason\" IS NULL OR \"handoffReason\" IN ('low_confidence', 'no_relevant_knowledge', 'visitor_requested', 'agent_off')),\n  CONSTRAINT \"conversation_state_52f142c4\" CHECK (state IN ('ai', 'waiting', 'human', 'closed')),\n  CONSTRAINT \"conversation_version_ec05e13a\" CHECK (version >= 0)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"conversations\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.members",
+    "label": "Create table \"members\"",
+    "summary": "Creates table \"members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"members\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"members\"",
+        "sql": "CREATE TABLE \"clarivo\".\"members\" (\n  \"id\" uuid NOT NULL,\n  \"role\" text NOT NULL,\n  \"userId\" uuid NOT NULL,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"member_owner_only_56ac498f\" CHECK (role = 'owner')\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"members\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.messages",
+    "label": "Create table \"messages\"",
+    "summary": "Creates table \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"messages\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"messages\"",
+        "sql": "CREATE TABLE \"clarivo\".\"messages\" (\n  \"author\" text NOT NULL,\n  \"body\" text NOT NULL,\n  \"clientMessageId\" uuid,\n  \"conversationId\" uuid NOT NULL,\n  \"createdAt\" timestamptz(3) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"memberId\" uuid,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"message_author_5961db72\" CHECK (author IN ('visitor', 'agent', 'member', 'system')),\n  CONSTRAINT \"message_body_length_d02407bd\" CHECK (char_length(body) BETWEEN 1 AND 4000),\n  CONSTRAINT \"message_member_author_09a2d8f9\" CHECK ((author = 'member') = (\"memberId\" IS NOT NULL))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"messages\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.visitor_visits",
+    "label": "Create table \"visitor_visits\"",
+    "summary": "Creates table \"visitor_visits\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "visitor_visits"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"visitor_visits\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"visitor_visits\"",
+        "sql": "CREATE TABLE \"clarivo\".\"visitor_visits\" (\n  \"createdAt\" timestamptz(3) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"visitId\" uuid NOT NULL,\n  \"visitorId\" uuid NOT NULL,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"visitor_visits\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.visitors",
+    "label": "Create table \"visitors\"",
+    "summary": "Creates table \"visitors\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "visitors"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"visitors\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"visitors\"",
+        "sql": "CREATE TABLE \"clarivo\".\"visitors\" (\n  \"browser\" text,\n  \"city\" text,\n  \"country\" text,\n  \"device\" text,\n  \"firstSeenAt\" timestamptz(3) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"language\" text,\n  \"lastSeenAt\" timestamptz(3) NOT NULL,\n  \"os\" text,\n  \"page\" text,\n  \"referrer\" text,\n  \"secretHash\" text NOT NULL,\n  \"timeZone\" text,\n  \"visitCount\" int4 NOT NULL,\n  \"workspaceId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"visitor_visit_count_bdab665b\" CHECK (\"visitCount\" >= 1)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"visitors\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.workspaces",
+    "label": "Create table \"workspaces\"",
+    "summary": "Creates table \"workspaces\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "table",
+        "name": "workspaces"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"workspaces\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"workspaces\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"workspaces\"",
+        "sql": "CREATE TABLE \"clarivo\".\"workspaces\" (\n  \"accentColor\" text NOT NULL,\n  \"agentName\" text NOT NULL,\n  \"allowedDomains\" text[] NOT NULL,\n  \"avatarKey\" text,\n  \"createdAt\" timestamptz(3) NOT NULL,\n  \"greeting\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"installedAt\" timestamptz(3),\n  \"name\" text NOT NULL,\n  \"ownerId\" uuid NOT NULL,\n  \"position\" text NOT NULL,\n  \"settingsVersion\" int4 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"workspace_position_65a6608a\" CHECK (position IN ('left', 'right')),\n  CONSTRAINT \"workspace_version_f3ba4a31\" CHECK (\"settingsVersion\" >= 0),\n  CONSTRAINT \"workspaces_allowedDomains_elem_not_null_156d14ed\" CHECK (array_position(\"allowedDomains\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"workspaces\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"workspaces\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.avatar_uploads.avatar_uploads_key_key",
+    "label": "Add unique constraint on \"avatar_uploads\" (key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "avatar_uploads_key_key",
+        "table": "avatar_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"avatar_uploads_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "avatar_uploads_key_key",
+          "clarivo",
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"avatar_uploads_key_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"avatar_uploads\" ADD CONSTRAINT \"avatar_uploads_key_key\" UNIQUE (\"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"avatar_uploads_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "avatar_uploads_key_key",
+          "clarivo",
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.conversations.conversations_workspaceId_id_key",
+    "label": "Add unique constraint on \"conversations\" (workspaceId, id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "conversations_workspaceId_id_key",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"conversations_workspaceId_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"conversations_workspaceId_id_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"conversations\" ADD CONSTRAINT \"conversations_workspaceId_id_key\" UNIQUE (\"workspaceId\", \"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"conversations_workspaceId_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.members.members_workspaceId_key",
+    "label": "Add unique constraint on \"members\" (workspaceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "members_workspaceId_key",
+        "table": "members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"members_workspaceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"members_workspaceId_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"members\" ADD CONSTRAINT \"members_workspaceId_key\" UNIQUE (\"workspaceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"members_workspaceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.members.members_userId_key",
+    "label": "Add unique constraint on \"members\" (userId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "members_userId_key",
+        "table": "members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"members_userId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_userId_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"members_userId_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"members\" ADD CONSTRAINT \"members_userId_key\" UNIQUE (\"userId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"members_userId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_userId_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.members.members_workspaceId_id_key",
+    "label": "Add unique constraint on \"members\" (workspaceId, id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "members_workspaceId_id_key",
+        "table": "members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"members_workspaceId_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"members_workspaceId_id_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"members\" ADD CONSTRAINT \"members_workspaceId_id_key\" UNIQUE (\"workspaceId\", \"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"members_workspaceId_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.messages.messages_workspaceId_clientMessageId_key",
+    "label": "Add unique constraint on \"messages\" (workspaceId, clientMessageId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "messages_workspaceId_clientMessageId_key",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"messages_workspaceId_clientMessageId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_clientMessageId_key",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"messages_workspaceId_clientMessageId_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"messages\" ADD CONSTRAINT \"messages_workspaceId_clientMessageId_key\" UNIQUE (\"workspaceId\", \"clientMessageId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"messages_workspaceId_clientMessageId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_clientMessageId_key",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.visitor_visits.visitor_visits_workspaceId_visitorId_visitId_key",
+    "label": "Add unique constraint on \"visitor_visits\" (workspaceId, visitorId, visitId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "visitor_visits_workspaceId_visitorId_visitId_key",
+        "table": "visitor_visits"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"visitor_visits_workspaceId_visitorId_visitId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitor_visits_workspaceId_visitorId_visitId_key",
+          "clarivo",
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"visitor_visits_workspaceId_visitorId_visitId_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"visitor_visits\" ADD CONSTRAINT \"visitor_visits_workspaceId_visitorId_visitId_key\" UNIQUE (\"workspaceId\", \"visitorId\", \"visitId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"visitor_visits_workspaceId_visitorId_visitId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitor_visits_workspaceId_visitorId_visitId_key",
+          "clarivo",
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.visitors.visitors_workspaceId_id_key",
+    "label": "Add unique constraint on \"visitors\" (workspaceId, id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "visitors_workspaceId_id_key",
+        "table": "visitors"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"visitors_workspaceId_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitors_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"visitors_workspaceId_id_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"visitors\" ADD CONSTRAINT \"visitors_workspaceId_id_key\" UNIQUE (\"workspaceId\", \"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"visitors_workspaceId_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitors_workspaceId_id_key",
+          "clarivo",
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.workspaces.workspaces_ownerId_key",
+    "label": "Add unique constraint on \"workspaces\" (ownerId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "unique",
+        "name": "workspaces_ownerId_key",
+        "table": "workspaces"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"workspaces_ownerId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "workspaces_ownerId_key",
+          "clarivo",
+          "\"clarivo\".\"workspaces\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"workspaces_ownerId_key\"",
+        "sql": "ALTER TABLE \"clarivo\".\"workspaces\" ADD CONSTRAINT \"workspaces_ownerId_key\" UNIQUE (\"ownerId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"workspaces_ownerId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "workspaces_ownerId_key",
+          "clarivo",
+          "\"clarivo\".\"workspaces\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.avatar_uploads.avatar_uploads_workspaceId_idx_ba65f874",
+    "label": "Create index \"avatar_uploads_workspaceId_idx_ba65f874\" on \"avatar_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "avatar_uploads_workspaceId_idx_ba65f874",
+        "table": "avatar_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"avatar_uploads_workspaceId_idx_ba65f874\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"avatar_uploads_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"avatar_uploads_workspaceId_idx_ba65f874\"",
+        "sql": "CREATE INDEX \"avatar_uploads_workspaceId_idx_ba65f874\" ON \"clarivo\".\"avatar_uploads\" (\"workspaceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"avatar_uploads_workspaceId_idx_ba65f874\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"avatar_uploads_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversations.conversations_workspaceId_lastMessageAt_idx_db1aff40",
+    "label": "Create index \"conversations_workspaceId_lastMessageAt_idx_db1aff40\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "conversations_workspaceId_lastMessageAt_idx_db1aff40",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"conversations_workspaceId_lastMessageAt_idx_db1aff40\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations_workspaceId_lastMessageAt_idx_db1aff40\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"conversations_workspaceId_lastMessageAt_idx_db1aff40\"",
+        "sql": "CREATE INDEX \"conversations_workspaceId_lastMessageAt_idx_db1aff40\" ON \"clarivo\".\"conversations\" (\"workspaceId\", \"lastMessageAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"conversations_workspaceId_lastMessageAt_idx_db1aff40\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations_workspaceId_lastMessageAt_idx_db1aff40\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversations.conversations_workspaceId_visitorId_idx_d74d200a",
+    "label": "Create index \"conversations_workspaceId_visitorId_idx_d74d200a\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "conversations_workspaceId_visitorId_idx_d74d200a",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"conversations_workspaceId_visitorId_idx_d74d200a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations_workspaceId_visitorId_idx_d74d200a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"conversations_workspaceId_visitorId_idx_d74d200a\"",
+        "sql": "CREATE INDEX \"conversations_workspaceId_visitorId_idx_d74d200a\" ON \"clarivo\".\"conversations\" (\"workspaceId\", \"visitorId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"conversations_workspaceId_visitorId_idx_d74d200a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"conversations_workspaceId_visitorId_idx_d74d200a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversations.one_open_conversation_per_visitor_cff00125",
+    "label": "Create index \"one_open_conversation_per_visitor_cff00125\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "one_open_conversation_per_visitor_cff00125",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"one_open_conversation_per_visitor_cff00125\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"one_open_conversation_per_visitor_cff00125\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"one_open_conversation_per_visitor_cff00125\"",
+        "sql": "CREATE UNIQUE INDEX \"one_open_conversation_per_visitor_cff00125\" ON \"clarivo\".\"conversations\" (\"workspaceId\", \"visitorId\") WHERE (state <> 'closed')",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"one_open_conversation_per_visitor_cff00125\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"one_open_conversation_per_visitor_cff00125\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversations.open_conversation_activity_f4d69313",
+    "label": "Create index \"open_conversation_activity_f4d69313\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "open_conversation_activity_f4d69313",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"open_conversation_activity_f4d69313\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"open_conversation_activity_f4d69313\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"open_conversation_activity_f4d69313\"",
+        "sql": "CREATE INDEX \"open_conversation_activity_f4d69313\" ON \"clarivo\".\"conversations\" (\"lastMessageAt\") WHERE (state <> 'closed')",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"open_conversation_activity_f4d69313\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"open_conversation_activity_f4d69313\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_workspaceId_conversationId_createdAt_id_idx_8939fffd",
+    "label": "Create index \"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "messages_workspaceId_conversationId_createdAt_id_idx_8939fffd",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\"",
+        "sql": "CREATE INDEX \"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\" ON \"clarivo\".\"messages\" (\"workspaceId\", \"conversationId\", \"createdAt\", \"id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_conversationId_createdAt_id_idx_8939fffd\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_workspaceId_conversationId_idx_97f9ba37",
+    "label": "Create index \"messages_workspaceId_conversationId_idx_97f9ba37\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "messages_workspaceId_conversationId_idx_97f9ba37",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_workspaceId_conversationId_idx_97f9ba37\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_conversationId_idx_97f9ba37\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_workspaceId_conversationId_idx_97f9ba37\"",
+        "sql": "CREATE INDEX \"messages_workspaceId_conversationId_idx_97f9ba37\" ON \"clarivo\".\"messages\" (\"workspaceId\", \"conversationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_workspaceId_conversationId_idx_97f9ba37\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_conversationId_idx_97f9ba37\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_workspaceId_memberId_idx_1f4f03c4",
+    "label": "Create index \"messages_workspaceId_memberId_idx_1f4f03c4\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "messages_workspaceId_memberId_idx_1f4f03c4",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_workspaceId_memberId_idx_1f4f03c4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_memberId_idx_1f4f03c4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_workspaceId_memberId_idx_1f4f03c4\"",
+        "sql": "CREATE INDEX \"messages_workspaceId_memberId_idx_1f4f03c4\" ON \"clarivo\".\"messages\" (\"workspaceId\", \"memberId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_workspaceId_memberId_idx_1f4f03c4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"messages_workspaceId_memberId_idx_1f4f03c4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.visitor_visits.visitor_visits_workspaceId_visitorId_idx_d74d200a",
+    "label": "Create index \"visitor_visits_workspaceId_visitorId_idx_d74d200a\" on \"visitor_visits\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "visitor_visits_workspaceId_visitorId_idx_d74d200a",
+        "table": "visitor_visits"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"visitor_visits_workspaceId_visitorId_idx_d74d200a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitor_visits_workspaceId_visitorId_idx_d74d200a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"visitor_visits_workspaceId_visitorId_idx_d74d200a\"",
+        "sql": "CREATE INDEX \"visitor_visits_workspaceId_visitorId_idx_d74d200a\" ON \"clarivo\".\"visitor_visits\" (\"workspaceId\", \"visitorId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"visitor_visits_workspaceId_visitorId_idx_d74d200a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitor_visits_workspaceId_visitorId_idx_d74d200a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.visitors.visitors_workspaceId_idx_ba65f874",
+    "label": "Create index \"visitors_workspaceId_idx_ba65f874\" on \"visitors\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "index",
+        "name": "visitors_workspaceId_idx_ba65f874",
+        "table": "visitors"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"visitors_workspaceId_idx_ba65f874\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitors_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"visitors_workspaceId_idx_ba65f874\"",
+        "sql": "CREATE INDEX \"visitors_workspaceId_idx_ba65f874\" ON \"clarivo\".\"visitors\" (\"workspaceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"visitors_workspaceId_idx_ba65f874\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"clarivo\".\"visitors_workspaceId_idx_ba65f874\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.avatar_uploads.avatar_uploads_workspaceId_fkey",
+    "label": "Add foreign key \"avatar_uploads_workspaceId_fkey\" on \"avatar_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "avatar_uploads_workspaceId_fkey",
+        "table": "avatar_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"avatar_uploads_workspaceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "avatar_uploads_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"avatar_uploads_workspaceId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"avatar_uploads\"\nADD CONSTRAINT \"avatar_uploads_workspaceId_fkey\"\nFOREIGN KEY (\"workspaceId\")\nREFERENCES \"clarivo\".\"workspaces\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"avatar_uploads_workspaceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "avatar_uploads_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"avatar_uploads\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.conversations.conversations_workspaceId_visitorId_fkey",
+    "label": "Add foreign key \"conversations_workspaceId_visitorId_fkey\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "conversations_workspaceId_visitorId_fkey",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"conversations_workspaceId_visitorId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_workspaceId_visitorId_fkey",
+          "clarivo",
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"conversations_workspaceId_visitorId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"conversations\"\nADD CONSTRAINT \"conversations_workspaceId_visitorId_fkey\"\nFOREIGN KEY (\"workspaceId\", \"visitorId\")\nREFERENCES \"clarivo\".\"visitors\" (\"workspaceId\", \"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"conversations_workspaceId_visitorId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_workspaceId_visitorId_fkey",
+          "clarivo",
+          "\"clarivo\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.members.members_workspaceId_fkey",
+    "label": "Add foreign key \"members_workspaceId_fkey\" on \"members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "members_workspaceId_fkey",
+        "table": "members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"members_workspaceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"members_workspaceId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"members\"\nADD CONSTRAINT \"members_workspaceId_fkey\"\nFOREIGN KEY (\"workspaceId\")\nREFERENCES \"clarivo\".\"workspaces\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"members_workspaceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "members_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.messages.messages_workspaceId_conversationId_fkey",
+    "label": "Add foreign key \"messages_workspaceId_conversationId_fkey\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "messages_workspaceId_conversationId_fkey",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"messages_workspaceId_conversationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_conversationId_fkey",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"messages_workspaceId_conversationId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"messages\"\nADD CONSTRAINT \"messages_workspaceId_conversationId_fkey\"\nFOREIGN KEY (\"workspaceId\", \"conversationId\")\nREFERENCES \"clarivo\".\"conversations\" (\"workspaceId\", \"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"messages_workspaceId_conversationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_conversationId_fkey",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.messages.messages_workspaceId_memberId_fkey",
+    "label": "Add foreign key \"messages_workspaceId_memberId_fkey\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "messages_workspaceId_memberId_fkey",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"messages_workspaceId_memberId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_memberId_fkey",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"messages_workspaceId_memberId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"messages\"\nADD CONSTRAINT \"messages_workspaceId_memberId_fkey\"\nFOREIGN KEY (\"workspaceId\", \"memberId\")\nREFERENCES \"clarivo\".\"members\" (\"workspaceId\", \"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"messages_workspaceId_memberId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_workspaceId_memberId_fkey",
+          "clarivo",
+          "\"clarivo\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.visitor_visits.visitor_visits_workspaceId_visitorId_fkey",
+    "label": "Add foreign key \"visitor_visits_workspaceId_visitorId_fkey\" on \"visitor_visits\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "visitor_visits_workspaceId_visitorId_fkey",
+        "table": "visitor_visits"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"visitor_visits_workspaceId_visitorId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitor_visits_workspaceId_visitorId_fkey",
+          "clarivo",
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"visitor_visits_workspaceId_visitorId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"visitor_visits\"\nADD CONSTRAINT \"visitor_visits_workspaceId_visitorId_fkey\"\nFOREIGN KEY (\"workspaceId\", \"visitorId\")\nREFERENCES \"clarivo\".\"visitors\" (\"workspaceId\", \"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"visitor_visits_workspaceId_visitorId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitor_visits_workspaceId_visitorId_fkey",
+          "clarivo",
+          "\"clarivo\".\"visitor_visits\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.visitors.visitors_workspaceId_fkey",
+    "label": "Add foreign key \"visitors_workspaceId_fkey\" on \"visitors\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "clarivo",
+        "objectType": "foreignKey",
+        "name": "visitors_workspaceId_fkey",
+        "table": "visitors"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"visitors_workspaceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitors_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"visitors_workspaceId_fkey\"",
+        "sql": "ALTER TABLE \"clarivo\".\"visitors\"\nADD CONSTRAINT \"visitors_workspaceId_fkey\"\nFOREIGN KEY (\"workspaceId\")\nREFERENCES \"clarivo\".\"workspaces\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"visitors_workspaceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "visitors_workspaceId_fkey",
+          "clarivo",
+          "\"clarivo\".\"visitors\""
+        ]
+      }
+    ]
+  }
+]

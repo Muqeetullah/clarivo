@@ -6,14 +6,19 @@
     "node": ">=24"
   },
   "scripts": {
+    "dev:playground": "node tools/embed-playground/server.mjs",
     "dev": "pnpm db:generate && pnpm --filter @clarivo/web dev",
     "build": "pnpm db:generate && pnpm --filter @clarivo/web build",
     "start": "pnpm --filter @clarivo/web start",
     "lint": "pnpm --filter @clarivo/web lint",
-    "typecheck": "pnpm --filter @clarivo/db typecheck && pnpm --filter @clarivo/web typecheck",
+    "typecheck": "pnpm --filter @clarivo/shared typecheck && pnpm --filter @clarivo/db typecheck && pnpm --filter @clarivo/web typecheck && pnpm --filter @clarivo/realtime typecheck && pnpm --filter @clarivo/functions typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "pnpm --filter @clarivo/db generate"
+    "db:generate": "pnpm --filter @clarivo/db generate",
+    "functions:build": "pnpm --filter @clarivo/functions build",
+    "functions:typecheck": "pnpm --filter @clarivo/functions typecheck",
+    "functions:deploy:dev": "pnpm functions:build && neon deploy --config neon.ts --env apps/web/.env.local --project-id still-sunset-59008422 --branch br-shiny-brook-b41e2eyh --no-env-pull",
+    "realtime:deploy:dev": "pnpm --filter @clarivo/realtime exec wrangler deploy --env development"
   },
   "devDependencies": {
     "prettier": "^3.9.9"

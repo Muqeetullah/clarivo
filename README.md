@@ -1,6 +1,6 @@
 # Clarivo
 
-A video-background landing page and a local customer-support dashboard following [the PRD](docs/PRD.md) and [technology stack](docs/TECH-STACK.md).
+A customer-support dashboard with a connected human live-chat milestone, plus a public sample demo, following [the PRD](docs/PRD.md) and [technology stack](docs/TECH-STACK.md).
 
 ## Run locally
 
@@ -21,24 +21,12 @@ pnpm typecheck
 pnpm build
 ```
 
-## New UI shells
+## Connected owner dashboard
 
-- `/dashboard`: protected owner shell with a server verified session, profile, sign out, and a clear business setup pending state. No workspace is created in this slice.
-- `/dashboard/inbox`: protected placeholder within the same shared layout.
-- `/login`, `/signup`, `/verify-email`, and `/auth-error`: custom forms connected to Neon Managed Auth for password and Google sign in, with six digit verification and recovery. Magic links remain unavailable pending the documented security and verified account requirements. See [owner auth setup and verification](docs/AUTH.md).
-- The homepage’s Log in link opens the new UI. `/demo` retains the existing interactive prototype.
+Verified owners complete `/onboarding` once, then use `/dashboard` for saved widget appearance, exact allowed domains, direct avatar uploads and the workspace installation snippet. `/dashboard/inbox` reads persistent conversations and visitor context, supports search and state filters, and lets the owner take over, reply and close.
 
-## Included
+The real iframe widget and built `embed.js` loader use signed visitor tokens, restore history and receive realtime events through PartyServer. New conversations start waiting for a human. AI, knowledge ingestion, suggested questions and attachments are deferred. `/demo` retains the independent, labeled sample prototype.
 
-- pnpm workspace with a Next.js 16 App Router app in `apps/web`, strict TypeScript, Tailwind CSS 4, and shadcn/ui (Base UI).
-- Single-viewport landing page with the supplied background video, dot-matrix typography, responsive navigation, product information sheets, and a demo CTA. External video and font CDNs require network access; a local Geist Pixel font provides the display fallback.
-- Overview with counts derived from demo conversations, an inbox with search and state filters, and waiting conversations sorted first.
-- Conversation history and visitor context. Take over, send replies, hand back to the agent, and close conversations. Replying automatically changes the state to `human`.
-- Knowledge source overview and an interactive chat widget appearance preview.
-- React Hook Form, Zod, and TanStack Query installed for future connected features. They are not needed for the current local UI state.
-- ESLint, Prettier, and a pnpm lockfile for reproducible installs.
-- A server-only Prisma 8 read layer in `packages/db` validates email signup results against Neon Auth's stored user IDs. It creates no workspace or business data and performs no schema changes. Root dev, build, and typecheck commands generate its local contract artifacts first.
+Read [development setup](docs/DEVELOPMENT.md) for environment variable names, provider resources and deployment commands. Read [milestone acceptance](docs/LIVE-CHAT.md) for checks, evidence and remaining blockers. The application Prisma migration lineage is separate from the managed Auth read contract, as described in [the database guide](packages/db/README.md).
 
-The public `/demo` uses labeled sample data in memory and needs no credentials. Owner authentication needs `apps/web/.env.local` as described in [AUTH.md](docs/AUTH.md); Neon owns account and session persistence. Business data, AI, uploads, real-time messaging, and the deployable widget remain unconnected. The remaining apps and packages from the technology stack will be added as their backend features are built.
-
-The product documents live in `docs/` and were updated on October 12, 2026 for the Clarivo rename. `CONTEXT.md` is an initial glossary extracted from them; no separate glossary attachment was supplied. Dashboard assumptions are recorded in `docs/DASHBOARD.md`.
+The older UI iteration history remains in [DASHBOARD.md](docs/DASHBOARD.md). Auth provider acceptance and magic-link blockers remain in [AUTH.md](docs/AUTH.md).
