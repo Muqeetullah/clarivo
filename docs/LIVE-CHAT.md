@@ -2,6 +2,10 @@
 
 Status: implementation and development acceptance in progress, October 18, 2026. This document records the implemented slice, not completion of the full AI-support PRD.
 
+## Widget stylesheet correction, October 22, 2026
+
+The Tailwind Turbopack rule matched every CSS file and forced CSS Modules through a plain CSS output type. The compiled widget module exported an empty object, so its React class names were missing. The rule now excludes `*.module.css`, preserving Next.js native scoping and class exports for both the widget and Markdown bodies. Browser inspection confirmed the header uses its scoped class, flex layout and 20px padding. At a measured 390px viewport, the header uses the mobile 16px top padding and the document has no horizontal overflow. Lint, all workspace type checks and a fresh production build passed. The failed sandbox build cache was preserved outside the repository before the successful fresh build. This verifies the styling correction, not the remaining full live chat acceptance checklist.
+
 ## Behavior and boundaries
 
 Verified owners complete business-name onboarding once. Unique database constraints and transactional creation enforce one workspace and one separate owner membership. New workspaces contain no demo conversations or knowledge sources. `/demo` remains the independent public sample prototype.
