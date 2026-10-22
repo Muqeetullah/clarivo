@@ -131,7 +131,7 @@ export function ConversationDetail({
                                 ? selected.visitor
                                 : message.author === "agent"
                                   ? "Clarivo Agent"
-                                  : "Jan Marshal"}
+                                  : "Muqeet ullah"}
                               <time className="ml-auto">{message.time}</time>
                             </MessageHeader>
                             <Bubble

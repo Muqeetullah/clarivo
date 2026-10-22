@@ -107,13 +107,13 @@ export function DashboardNavigation({
           className="owner"
           onClick={() =>
             setNotice(
-              "You’re viewing the demo as Jan, the workspace owner. Account settings will be connected with Neon Auth in the next milestone.",
+              "You’re viewing the demo as Muqeet ullah, the workspace owner. Account settings will be connected with Neon Auth in the next milestone.",
             )
           }
         >
-          <span className="owner-avatar">J</span>
+          <span className="owner-avatar">M</span>
           <span>
-            <strong>Jan Marshal</strong>
+            <strong>Muqeet ullah</strong>
             <small>Workspace owner</small>
           </span>
           <MoreHorizontal />

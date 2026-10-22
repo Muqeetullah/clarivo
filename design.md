@@ -73,7 +73,7 @@ Run root lint, typecheck, and build scripts. Manually inspect desktop and phone 
 
 ## Dashboard and auth shells
 
-The layout-only addition uses Marshall Desk branding at the user’s request, reusing `public/assets/logo.svg`. The existing landing page and `/demo` retain their Clarivo copy. `/dashboard` adapts shadcn `dashboard-01` with an inset main surface, Dashboard and Inbox navigation, an icon-collapse sidebar on desktop, a sheet on phones, and a bottom profile menu. Inner content remains a placeholder. Sidebar colors derive from the existing violet theme tokens.
+The layout-only addition uses Clarivo branding for owner Muqeet ullah, reusing `public/assets/logo.svg`. The existing landing page and `/demo` retain their Clarivo copy. `/dashboard` adapts shadcn `dashboard-01` with an inset main surface, Dashboard and Inbox navigation, an icon-collapse sidebar on desktop, a sheet on phones, and a bottom profile menu. Inner content remains a placeholder. Sidebar colors derive from the existing violet theme tokens.
 
 `/login` and `/signup` adapt shadcn `login-02`: the form is on the left and a static black brand panel on the right, hidden below the desktop breakpoint. The panel reuses the local Geist Pixel Circle headline and puts the monochrome logo on a white circle for contrast. Forms share Field primitives, violet primary actions, explicit preview labels, and local validation. Social login and password recovery are omitted until authentication is implemented.
 

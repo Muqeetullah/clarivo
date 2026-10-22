@@ -196,7 +196,7 @@ Routes answer `202` and work in `waitUntil`. Triggers are at-least-once, so inge
 - **Buckets:**
   - `profile-images` is **public-read**. It holds agent avatars (and later member photos), which the dashboard and widget load straight from the object's public URL: `${STORAGE_PUBLIC_BASE_URL}/profile-images/<key>`.
   - `uploads` is private and holds source files at `workspaces/<workspaceId>/sources/<sourceId>.<ext>` (attachments will use another prefix). `knowledge.createUpload` creates or reuses the source row first (same name, same source and key), then presigns a 5-minute PUT that signs `Content-Type` (derived from the extension) and `Content-Length`. On the development branch this bucket is inherited from the parent branch, so its CORS rule can only be changed there; the inherited rule already allows browser PUTs.
-- **Agent avatars** are limited to **2 MB** (Jan's decision; the 10 MB in PRD L-3 applies to attachments and sources) and must be PNG, JPEG, WebP or GIF.
+- **Agent avatars** are limited to **2 MB** (Muqeet ullah's decision; the 10 MB in PRD L-3 applies to attachments and sources) and must be PNG, JPEG, WebP or GIF.
 - **Avatar flow:**
   1. `createAvatarUpload` checks the declared type and size and generates the key on the server, under the workspace's prefix: `workspaces/<workspaceId>/agent-avatar/<uuid>.<ext>`. It returns a presigned PUT (valid for 2 minutes) that signs `Content-Type` and `Cache-Control: public, max-age=31536000, immutable`, which is safe because every upload gets a new key.
   2. The browser PUTs the file with exactly those headers.
