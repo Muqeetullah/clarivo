@@ -255,7 +255,7 @@ Priority: **P0** = required for v1. **P2** = later.
 
 ### 7.6 Abuse protection
 
-v1 deliberately has **no rate limits, usage caps, or knowledge base quotas**. All AI costs are paid by the platform operator (Jan), and that risk is accepted. The only barrier to sign-up is email verification. The agent's defense against wasted tokens is the classifier: off-topic messages never reach retrieval or the answer model.
+v1 deliberately has **no rate limits, usage caps, or knowledge base quotas**. All AI costs are paid by the platform operator (Muqeet ullah), and that risk is accepted. The only barrier to sign-up is email verification. The agent's defense against wasted tokens is the classifier: off-topic messages never reach retrieval or the answer model.
 
 Safety limits do exist. They stop inputs from breaking the system, not from costing money.
 

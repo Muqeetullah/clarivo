@@ -88,7 +88,7 @@ export function Dashboard() {
               Demo workspace
             </span>
             <span className="topbar-divider" />
-            <span className="owner-avatar small">J</span>
+            <span className="owner-avatar small">M</span>
           </div>
         </header>
         <div className="main-content">
@@ -108,7 +108,7 @@ export function Dashboard() {
             <div>
               <div className="eyebrow">YOUR WORKSPACE, CONNECTED</div>
               <h1>
-                {page === "overview" ? "Welcome back, Jan" : titles[page]}
+                {page === "overview" ? "Welcome back, Muqeet ullah" : titles[page]}
                 {page === "overview" && <span className="wave">✳</span>}
               </h1>
               <p>
