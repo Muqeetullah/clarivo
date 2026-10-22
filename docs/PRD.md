@@ -3,7 +3,7 @@
 |               |                                                                                                                                                 |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status        | Agreed (confirmed Sep 26, 2026)                                                                                                                 |
-| Owner         | Jan Marshal                                                                                                                                     |
+| Owner         | Muqeet ullah                                                                                                                                     |
 | Last updated  | October 12, 2026                                                                                                                                |
 | Scope         | v1: live chat + AI support agent                                                                                                                |
 | Current build | Local dashboard prototype with demo data; the full v1 product is not yet implemented                                                            |

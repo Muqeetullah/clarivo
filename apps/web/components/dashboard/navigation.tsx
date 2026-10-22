@@ -113,7 +113,7 @@ export function DashboardNavigation({
         >
           <span className="owner-avatar">J</span>
           <span>
-            <strong>Jan Marshal</strong>
+            <strong>Muqeet ullah</strong>
             <small>Workspace owner</small>
           </span>
           <MoreHorizontal />
